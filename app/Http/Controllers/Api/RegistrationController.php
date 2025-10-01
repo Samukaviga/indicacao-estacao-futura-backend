@@ -89,7 +89,7 @@ class RegistrationController extends Controller
 
 public function webhookSend(Request $request)
 {
-    \Log::info('Webhook recebido:', $request->all());
+    \Log::info('Webhook recebido', $request->all());
     return response('EVENT_RECEIVED', 200);
 }
 }
