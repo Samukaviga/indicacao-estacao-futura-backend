@@ -10,6 +10,7 @@ Route::get('/registrations/{registration}', [RegistrationController::class, 'sho
 Route::patch('/registrations/{registration}', [RegistrationController::class, 'update']);
 
 Route::get('/webhook', [RegistrationController::class, 'webhook']);
+Route::post('/webhook', [RegistrationController::class, 'webhookSend']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();

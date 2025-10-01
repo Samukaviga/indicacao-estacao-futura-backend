@@ -37,24 +37,24 @@ class RegistrationController extends Controller
     }
 
     public function update(Request $request, Registration $registration): JsonResponse
-{
-    try {
-        $dto = UpdateRegistrationDTO::fromArray($request->request->all());
+    {
+        try {
+            $dto = UpdateRegistrationDTO::fromArray($request->request->all());
 
-        $registration->update($dto->toArray());
+            $registration->update($dto->toArray());
 
-        return response()->json([
-            'success' => true,
-            'data' => RegistrationResource::make($registration)
-        ], 200); // 200 = OK (melhor do que 201 que é Created)
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'An unexpected error occurred',
-            'exception' => $e->getMessage()
-        ], 500);
+            return response()->json([
+                'success' => true,
+                'data' => RegistrationResource::make($registration)
+            ], 200); // 200 = OK (melhor do que 201 que é Created)
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An unexpected error occurred',
+                'exception' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 
     public function show(Registration $registration): JsonResponse
     {
@@ -72,19 +72,24 @@ class RegistrationController extends Controller
         }
     }
 
-     public function webwook(Request $request)
-    {
+    public function webhook(Request $request)
+{
+    $mode = $request->query('hub_mode');
+    $token = $request->query('hub_verify_token');
+    $challenge = $request->query('hub_challenge');
 
-        $mode = $request->query('hub_mode');
-        $token = $request->query('hub_verify_token');
-        $challenge = $request->query('hub_challenge');
+    $VERIFY_TOKEN = env('META_VERIFY_TOKEN', 'MEU_TOKEN_SECRETO');
 
-        $VERIFY_TOKEN = env('META_VERIFY_TOKEN', 'MEU_TOKEN_SECRETO');
-
-        if ($mode === 'subscribe' && $token === $VERIFY_TOKEN) {
-            return response($challenge, 200);
-        }
-
-        return response('Erro de verificação', 403);
+    if ($mode === 'subscribe' && $token === $VERIFY_TOKEN) {
+        return response($challenge, 200);
     }
+
+    return response('Erro de verificação', 403);
+}
+
+public function webhookSend(Request $request)
+{
+    \Log::info('Webhook recebido:', $request->all());
+    return response('EVENT_RECEIVED', 200);
+}
 }
