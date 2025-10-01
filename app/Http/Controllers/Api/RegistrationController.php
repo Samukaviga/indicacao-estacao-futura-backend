@@ -71,4 +71,20 @@ class RegistrationController extends Controller
             ], 500);
         }
     }
+
+     public function webwook(Request $request)
+    {
+
+        $mode = $request->query('hub_mode');
+        $token = $request->query('hub_verify_token');
+        $challenge = $request->query('hub_challenge');
+
+        $VERIFY_TOKEN = env('META_VERIFY_TOKEN', 'MEU_TOKEN_SECRETO');
+
+        if ($mode === 'subscribe' && $token === $VERIFY_TOKEN) {
+            return response($challenge, 200);
+        }
+
+        return response('Erro de verificação', 403);
+    }
 }
